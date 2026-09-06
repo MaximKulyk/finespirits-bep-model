@@ -4,7 +4,7 @@ import numpy as np
 
 # Настройка страницы под мобильные и ПК
 st.set_page_config(
-    page_title="FineSpirits Simulator v8.0",
+    page_title="FineSpirits Simulator v8.1",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -51,7 +51,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Хедер
-st.title("🍷 Интерактивный симулятор FineSpirits v8.0 (Без иллюзий)")
+st.title("🍷 Интерактивный симулятор FineSpirits v8.1")
 st.markdown("##### Моделирование 11 пунктов оптимизации, дебиторской задолженности и окупаемости за 12 месяцев")
 st.write("---")
 
@@ -60,9 +60,10 @@ if 'preset' not in st.session_state:
     st.session_state.preset = 'current'
 
 # --- БОКОВАЯ ПАНЕЛЬ: ТУМБЛЕРЫ 11 ПУНКТОВ ---
-st.sidebar.markdown("## 🛠️ СЦЕНАРИИ И ПРЕСЕТЫ")
-col_b1, col_btn2 = st.sidebar.columns(2)
-if col_b1.button("📉 Текущий YTD"):
+st.sidebar.header("🛠️ Управление сценариями")
+
+col_btn1, col_btn2 = st.sidebar.columns(2)
+if col_btn1.button("📉 Текущий YTD"):
     st.session_state.preset = 'current'
 if col_btn2.button("🚀 План v7/v8"):
     st.session_state.preset = 'target'
@@ -169,9 +170,9 @@ current_profit = (starting_revenue * (contribution_margin_pct / 100.0)) - fixed_
 # --- ПАНЕЛЬ KPI ---
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.markdown(f'<div class="metric-box"><div class="metric-title">Текущие постоянные расходы (Fixed)</div><div class="metric-value">${fixed_costs:,.0f}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-box"><div class="metric-title">Постоянные расходы (Fixed)</div><div class="metric-value">${fixed_costs:,.0f}</div></div>', unsafe_allow_html=True)
 with col2:
-    st.markdown(f'<div class="metric-box"><div class="metric-title">Маржинальная рентабельность (CM %)</div><div class="{"metric-value" if contribution_margin_pct > 0 else "metric-value-negative"}">{contribution_margin_pct:.1f}%</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-box"><div class="metric-title">Маржинальность (CM %)</div><div class="{"metric-value" if contribution_margin_pct > 0 else "metric-value-negative"}">{contribution_margin_pct:.1f}%</div></div>', unsafe_allow_html=True)
 with col3:
     st.markdown(f'<div class="metric-box"><div class="metric-title">Чистый результат (Старт)</div><div class="{"metric-value" if current_profit >= 0 else "metric-value-negative"}">${current_profit:,.0f}</div></div>', unsafe_allow_html=True)
 with col4:
@@ -207,9 +208,9 @@ with col_graph1:
     else:
         ax1.fill_between(x_range, x_range, costs_line, color='#FCE8E6', alpha=0.5, label="Зона убытка")
         
-    ax1.plot(revenue, revenue * (total_var_pct / 100.0) + fixed_costs, 'o', color="#C5A059", markersize=10, label="Текущая точка")
+    ax1.plot(starting_revenue, starting_revenue * (total_var_pct / 100.0) + fixed_costs, 'o', color="#C5A059", markersize=10, zorder=10, label="Текущая точка")
     if bep_revenue and bep_revenue <= 500000:
-        ax1.plot(bep_revenue, bep_revenue, 'o', color="#27AE60", markersize=10, label="Точка BEP")
+        ax1.plot(bep_revenue, bep_revenue, 'o', color="#27AE60", markersize=10, zorder=10, label="Точка BEP")
         
     ax1.set_xlim(0, 500000)
     ax1.set_ylim(0, 500000)
@@ -233,7 +234,6 @@ with col_graph2:
     ax2.fill_between(months, cum_cash_needed, color="#FCE8E6", alpha=0.4)
     
     ax2.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:,.0f}'))
-    ax2.set_title("Общая потребность в финансировании на разгоне продаж", fontsize=11, fontweight="bold")
     ax2.set_ylabel("Суммарный объем вливаний акционеров", fontsize=9)
     ax2.grid(True, linestyle=":", alpha=0.5)
     ax2.spines['top'].set_visible(False)
